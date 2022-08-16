@@ -1,2 +1,0 @@
-# AssetProject
-create smth
