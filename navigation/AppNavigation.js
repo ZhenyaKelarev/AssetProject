@@ -1,6 +1,6 @@
-import Asset from '../pages/Asset/index';
-import Assets from '../pages/Assets/Assets';
-import Favorites from '../pages/Favorites/Favorites';
+import Asset from '../screens/Asset';
+import Assets from '../screens/Assets/Assets';
+import Favorites from '../screens/Favorites/Favorites';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 import { NavigationContainer } from '@react-navigation/native';
@@ -20,11 +20,9 @@ const TabComponent = () => {
           let iconName;
 
           if (route.name === 'Home') {
-            iconName = focused
-              ? 'ios-information-circle'
-              : 'ios-information-circle-outline';
+            iconName = focused ? 'home' : 'home-outline';
           } else if (route.name === 'Favorites') {
-            iconName = focused ? 'ios-list' : 'ios-list';
+            iconName = focused ? 'star' : 'star-outline';
           }
 
           // You can return any component that you like here!

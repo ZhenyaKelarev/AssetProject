@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Button, FlatList } from 'react-native';
+import { StyleSheet, View, Button, FlatList } from 'react-native';
 import AssetCard from '../../components/AssetCard';
 
 const Assets = ({ navigation }) => {
-  const [data, setData] = useState();
-
+  const [data, setData] = useState([]);
+  console.log('data', data);
   const getAssets = async () => {
     try {
-      const result = await fetch('https://data.messari.io/api/v1/assets');
+      const result = await fetch(
+        'https://data.messari.io/api/v2/assets?fields=id,name,metrics/market_data/price_usd'
+      );
       const response = await result.json();
       setData(response.data);
     } catch (error) {
@@ -17,7 +19,6 @@ const Assets = ({ navigation }) => {
 
   useEffect(() => {
     getAssets();
-    console.log('data', data);
   }, []);
 
   return (
@@ -27,7 +28,12 @@ const Assets = ({ navigation }) => {
           data={data}
           renderItem={(itemData) => {
             return (
-              <AssetCard navigation={navigation} name={itemData.item.name} />
+              <AssetCard
+                navigation={navigation}
+                id={itemData.item.id}
+                name={itemData.item.name}
+                price={itemData.item.metrics.market_data.price_usd}
+              />
             );
           }}
           keyExtractor={(item) => {

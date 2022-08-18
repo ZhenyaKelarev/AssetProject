@@ -1,12 +1,19 @@
 import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 
-const AssetCard = ({ name, navigation }) => {
+const AssetCard = ({ name, navigation, price, id }) => {
   return (
     <TouchableOpacity
       style={styles.container}
-      onPress={() => navigation.navigate('Asset')}
+      onPress={() =>
+        navigation.navigate('Asset', {
+          name,
+          price,
+          id,
+        })
+      }
     >
       <Text>{name}</Text>
+      <Text>{`${Math.round(price)}$`}</Text>
     </TouchableOpacity>
   );
 };
