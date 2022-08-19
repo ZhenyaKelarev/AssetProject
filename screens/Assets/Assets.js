@@ -1,25 +1,40 @@
 import { useState, useEffect } from 'react';
-import { StyleSheet, View, Button, FlatList } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Button,
+  FlatList,
+  ActivityIndicator,
+} from 'react-native';
 import AssetCard from '../../components/AssetCard';
+import Loader from '../../components/Loader';
 
 const Assets = ({ navigation }) => {
   const [data, setData] = useState([]);
-  console.log('data', data);
+  const [isLoading, setIsLoading] = useState(false);
+  const [pageCurrent, setPageCurrent] = useState(1);
+
   const getAssets = async () => {
+    const apiURL = `https://data.messari.io/api/v2/assets?limit=20&page=${pageCurrent}&fields=id,name,metrics/market_data/price_usd`;
     try {
-      const result = await fetch(
-        'https://data.messari.io/api/v2/assets?fields=id,name,metrics/market_data/price_usd'
-      );
+      const result = await fetch(apiURL);
       const response = await result.json();
-      setData(response.data);
+      setData(data.concat(response.data));
+      setIsLoading(false);
     } catch (error) {
       console.error(error);
     }
   };
 
+  const handleLoadMore = () => {
+    setPageCurrent(pageCurrent + 1);
+    setIsLoading(true);
+  };
+
   useEffect(() => {
+    setIsLoading(true);
     getAssets();
-  }, []);
+  }, [pageCurrent]);
 
   return (
     <View style={styles.container}>
@@ -40,6 +55,9 @@ const Assets = ({ navigation }) => {
             return item.id;
           }}
           alwaysBounceVertical={false}
+          ListFooterComponent={<Loader isLoading={isLoading} />}
+          onEndReached={handleLoadMore}
+          onEndReachedThreshold={0}
         />
       </View>
     </View>
@@ -57,6 +75,10 @@ const styles = StyleSheet.create({
   assetsContainer: {
     flex: 2,
     width: '70%',
+  },
+  loader: {
+    marginTop: 10,
+    alignItems: 'center',
   },
 });
 
