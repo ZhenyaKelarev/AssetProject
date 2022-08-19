@@ -1,11 +1,5 @@
 import { useState, useEffect } from 'react';
-import {
-  StyleSheet,
-  View,
-  Button,
-  FlatList,
-  ActivityIndicator,
-} from 'react-native';
+import { StyleSheet, View, FlatList } from 'react-native';
 import AssetCard from '../../components/AssetCard';
 import Loader from '../../components/Loader';
 
@@ -15,10 +9,12 @@ const Assets = ({ navigation }) => {
   const [pageCurrent, setPageCurrent] = useState(1);
 
   const getAssets = async () => {
-    const apiURL = `https://data.messari.io/api/v2/assets?limit=20&page=${pageCurrent}&fields=id,name,metrics/market_data/price_usd`;
+    const apiURL = `https://data.messari.io/api/v2/assets?limit=20&page=${pageCurrent}&fields=id,slug,name,metrics/market_data/price_usd`;
+    //
     try {
       const result = await fetch(apiURL);
       const response = await result.json();
+      console.log('response', response.data);
       setData(data.concat(response.data));
       setIsLoading(false);
     } catch (error) {
@@ -47,6 +43,7 @@ const Assets = ({ navigation }) => {
                 navigation={navigation}
                 id={itemData.item.id}
                 name={itemData.item.name}
+                slug={itemData.item.slug}
                 price={itemData.item.metrics.market_data.price_usd}
               />
             );
@@ -67,7 +64,7 @@ const Assets = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#1B1A17',
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 20,
@@ -75,10 +72,6 @@ const styles = StyleSheet.create({
   assetsContainer: {
     flex: 2,
     width: '70%',
-  },
-  loader: {
-    marginTop: 10,
-    alignItems: 'center',
   },
 });
 
