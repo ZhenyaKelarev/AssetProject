@@ -58,8 +58,8 @@ const Asset = ({ route }) => {
   return (
     <View style={styles.container}>
       <View style={styles.headerAsset}>
-        <Text>{name}</Text>
-        <Text>{`${price.toFixed(2)}$`}</Text>
+        <Text style={styles.text}>{name}</Text>
+        <Text style={styles.text}>{`${price.toFixed(2)}$`}</Text>
         <TouchableOpacity onPress={toggleFavoriteItem}>
           {isFavorite === -1 ? (
             <Ionicons name='bookmark-outline' size='40px' color='red' filled />
@@ -86,7 +86,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-around',
-    marginVertical: 10,
+    paddingVertical: 10,
+    backgroundColor: '#14213d',
+  },
+  text: {
+    color: '#fff',
   },
   containerVictory: {
     flex: 1,
