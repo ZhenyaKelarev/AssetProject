@@ -10,11 +10,9 @@ const Assets = ({ navigation }) => {
 
   const getAssets = async () => {
     const apiURL = `https://data.messari.io/api/v2/assets?limit=20&page=${pageCurrent}&fields=id,slug,name,metrics/market_data/price_usd`;
-    //
     try {
       const result = await fetch(apiURL);
       const response = await result.json();
-      console.log('response', response.data);
       setData(data.concat(response.data));
       setIsLoading(false);
     } catch (error) {

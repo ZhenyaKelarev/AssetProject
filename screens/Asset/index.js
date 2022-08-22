@@ -3,41 +3,40 @@ import { useContext, useEffect, useState } from 'react';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { FavoriteContext } from '../../context';
 import formatDate from '../../helpers/formatDate';
-// import { VictoryBar, VictoryChart, VictoryTheme } from 'victory-native';
+import Chart from '../../components/Chart';
 
 const Asset = ({ route }) => {
   const [date, setDate] = useState(new Date());
+  const [isLoadingChart, setIsLoadingChart] = useState(false);
   const [prevDate, setPrevDate] = useState(
     new Date(Date.now() - 1000 * 60 * 60 * 24 * 10)
   );
+  const [data, setData] = useState([]);
   const { favoritesData, setFavoritesData } = useContext(FavoriteContext);
   const name = route.params.name;
   const price = route.params.price;
   const id = route.params.id;
   const slug = route.params.id;
 
-  const data = [
-    { quarter: 1, earnings: 13000 },
-    { quarter: 2, earnings: 16500 },
-    { quarter: 3, earnings: 14250 },
-    { quarter: 4, earnings: 19000 },
-  ];
-
   useEffect(() => {
+    setIsLoadingChart(true);
     setDate(formatDate(date));
     setPrevDate(formatDate(prevDate));
     getAssetData();
   }, []);
-
-  console.log('date', date);
-  console.log('prevDate', prevDate);
 
   const getAssetData = async () => {
     const apiURL = `https://data.messari.io/api/v1/assets/${slug}/metrics/price/time-series?start=${prevDate}&end=${date}&interval=1d`;
     try {
       const result = await fetch(apiURL);
       const response = await result.json();
-      console.log('response', response);
+      const newArr = response.data?.values.map((element) => {
+        const formatedDate = formatDate(element[0]);
+        const formatedY = +element[1].toFixed(2);
+        return { x: formatedDate, y: formatedY };
+      });
+      setData(newArr);
+      setIsLoadingChart(false);
     } catch (error) {
       console.error(error);
     }
@@ -58,20 +57,19 @@ const Asset = ({ route }) => {
 
   return (
     <View style={styles.container}>
-      <Text>{name}</Text>
-      <Text>{price}</Text>
-      <TouchableOpacity onPress={toggleFavoriteItem}>
-        {isFavorite === -1 ? (
-          <Ionicons name='bookmark-outline' size='40px' color='red' filled />
-        ) : (
-          <Ionicons name='bookmark' size='40px' color='red' filled />
-        )}
-      </TouchableOpacity>
-      {/* <View style={styles.containerVictory}>
-        <VictoryChart width={350} theme={VictoryTheme.material}>
-          <VictoryBar data={data} x='quarter' y='earnings' />
-        </VictoryChart>
-      </View> */}
+      <View style={styles.headerAsset}>
+        <Text>{name}</Text>
+        <Text>{`${price.toFixed(2)}$`}</Text>
+        <TouchableOpacity onPress={toggleFavoriteItem}>
+          {isFavorite === -1 ? (
+            <Ionicons name='bookmark-outline' size='40px' color='red' filled />
+          ) : (
+            <Ionicons name='bookmark' size='40px' color='red' filled />
+          )}
+        </TouchableOpacity>
+      </View>
+
+      <Chart isLoading={isLoadingChart} data={data} />
     </View>
   );
 };
@@ -82,6 +80,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  headerAsset: {
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    marginVertical: 10,
   },
   containerVictory: {
     flex: 1,
