@@ -10,6 +10,7 @@
 
 # production
 /build
+packager-info.json
 
 # misc
 .DS_Store
