@@ -6,7 +6,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 
 const Favorites = ({ navigation }) => {
   const { favoritesData } = useContext(FavoriteContext);
-  console.log('favoritesData', favoritesData);
+
   return (
     <LinearGradient
       colors={['#0f0c29', '#302b63', '#24243e']}

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, memo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { VictoryArea, VictoryChart } from 'victory-native';
 import {
@@ -56,4 +56,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Chart;
+export default memo(Chart);

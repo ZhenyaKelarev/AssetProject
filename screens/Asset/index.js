@@ -48,9 +48,9 @@ const Asset = ({ route }) => {
     }
   });
 
-  const throttleFunc = throttle(1000, () => {
-    console.log('asdasdasd');
-    toggleFavoriteItem();
+  const throttleFunc = throttle(1000, () => toggleFavoriteItem(), {
+    noLeading: false,
+    noTrailing: true,
   });
 
   useEffect(() => {
