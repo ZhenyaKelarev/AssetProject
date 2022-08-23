@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, memo } from 'react';
 import AssetCard from '../../components/AssetCard';
 import { StyleSheet, View, FlatList, ImageBackground } from 'react-native';
 import { FavoriteContext } from '../../context';
@@ -6,6 +6,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 
 const Favorites = ({ navigation }) => {
   const { favoritesData } = useContext(FavoriteContext);
+  console.log('favoritesData', favoritesData);
   return (
     <LinearGradient
       colors={['#0f0c29', '#302b63', '#24243e']}
@@ -21,19 +22,16 @@ const Favorites = ({ navigation }) => {
           <FlatList
             style={styles.flatList}
             data={favoritesData}
-            renderItem={(itemData) => {
-              return (
-                <AssetCard
-                  navigation={navigation}
-                  name={itemData.item.name}
-                  price={itemData.item.price}
-                  id={itemData.item.id}
-                />
-              );
-            }}
-            keyExtractor={(item) => {
-              return item.id;
-            }}
+            renderItem={(itemData) => (
+              <AssetCard
+                navigation={navigation}
+                name={itemData.item.name}
+                price={itemData.item.price}
+                id={itemData.item.id}
+                slug={itemData.item.slug}
+              />
+            )}
+            keyExtractor={(item) => item.id}
             alwaysBounceVertical={false}
           />
         </View>
@@ -65,4 +63,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Favorites;
+export default memo(Favorites);

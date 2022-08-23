@@ -44,22 +44,19 @@ const Assets = ({ navigation }) => {
       >
         <View style={styles.assetsContainer}>
           <FlatList
+            showsVerticalScrollIndicator={false}
             style={styles.flatList}
             data={data}
-            renderItem={(itemData) => {
-              return (
-                <AssetCard
-                  navigation={navigation}
-                  id={itemData.item.id}
-                  name={itemData.item.name}
-                  slug={itemData.item.slug}
-                  price={itemData.item.metrics.market_data.price_usd}
-                />
-              );
-            }}
-            keyExtractor={(item) => {
-              return item.id;
-            }}
+            renderItem={(itemData) => (
+              <AssetCard
+                navigation={navigation}
+                id={itemData.item.id}
+                name={itemData.item.name}
+                slug={itemData.item.slug}
+                price={itemData.item.metrics.market_data.price_usd}
+              />
+            )}
+            keyExtractor={(item) => item.id}
             alwaysBounceVertical={false}
             ListFooterComponent={<Loader isLoading={isLoading} />}
             onEndReached={handleLoadMore}

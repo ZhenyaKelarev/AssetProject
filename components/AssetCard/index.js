@@ -1,4 +1,5 @@
 import { StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { memo } from 'react';
 
 const AssetCard = ({ name, navigation, price, id, slug }) => {
   return (
@@ -47,4 +48,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AssetCard;
+export default memo(AssetCard);

@@ -1,9 +1,10 @@
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState, useMemo, useCallback } from 'react';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { FavoriteContext } from '../../context';
 import formatDate from '../../helpers/formatDate';
 import Chart from '../../components/Chart';
+import { throttle } from 'throttle-debounce';
 
 const Asset = ({ route }) => {
   const [date, setDate] = useState(new Date());
@@ -13,17 +14,7 @@ const Asset = ({ route }) => {
   );
   const [data, setData] = useState([]);
   const { favoritesData, setFavoritesData } = useContext(FavoriteContext);
-  const name = route.params.name;
-  const price = route.params.price;
-  const id = route.params.id;
-  const slug = route.params.id;
-
-  useEffect(() => {
-    setIsLoadingChart(true);
-    setDate(formatDate(date));
-    setPrevDate(formatDate(prevDate));
-    getAssetData();
-  }, []);
+  const { name, price, id, slug } = route.params ?? {};
 
   const getAssetData = async () => {
     const apiURL = `https://data.messari.io/api/v1/assets/${slug}/metrics/price/time-series?start=${prevDate}&end=${date}&interval=1d`;
@@ -31,8 +22,8 @@ const Asset = ({ route }) => {
       const result = await fetch(apiURL);
       const response = await result.json();
       const newArr = response.data?.values.map((element) => {
-        const formatedDate = formatDate(element[0]);
-        const formatedY = +element[1].toFixed(2);
+        const formatedDate = +formatDate(element[0]);
+        const formatedY = +element[1];
         return { x: formatedDate, y: formatedY };
       });
       setData(newArr);
@@ -42,25 +33,43 @@ const Asset = ({ route }) => {
     }
   };
 
-  const isFavorite = favoritesData.findIndex((element) => element.id === id);
+  const isFavorite = useMemo(() =>
+    favoritesData.findIndex((element) => element.id === id)
+  );
 
-  const toggleFavoriteItem = () => {
+  const toggleFavoriteItem = useCallback(() => {
     if (isFavorite === -1) {
-      setFavoritesData([...favoritesData, { name, price, id }]);
+      setFavoritesData([...favoritesData, { name, price, id, slug }]);
     } else {
       const newArr = favoritesData.filter((item) => {
         return item.id !== id;
       });
       setFavoritesData(newArr);
     }
-  };
+  });
+
+  const throttleFunc = throttle(1000, () => {
+    console.log('asdasdasd');
+    toggleFavoriteItem();
+  });
+
+  useEffect(() => {
+    setIsLoadingChart(true);
+    setDate(formatDate(date));
+    setPrevDate(formatDate(prevDate));
+    getAssetData();
+  }, []);
 
   return (
     <View style={styles.container}>
       <View style={styles.headerAsset}>
-        <Text style={styles.text}>{name}</Text>
-        <Text style={styles.text}>{`${price.toFixed(2)}$`}</Text>
-        <TouchableOpacity onPress={toggleFavoriteItem}>
+        <Text numberOfLines={1} style={styles.text}>
+          {name}
+        </Text>
+        <Text numberOfLines={1} style={styles.text}>{`${price.toFixed(
+          2
+        )}$`}</Text>
+        <TouchableOpacity onPress={throttleFunc}>
           {isFavorite === -1 ? (
             <Ionicons name='bookmark-outline' size='40px' color='red' filled />
           ) : (
@@ -82,15 +91,18 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   headerAsset: {
+    height: 80,
     width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-around',
     paddingVertical: 10,
+    paddingHorizontal: 15,
     backgroundColor: '#14213d',
   },
   text: {
     color: '#fff',
+    flex: 2,
   },
   containerVictory: {
     flex: 1,
